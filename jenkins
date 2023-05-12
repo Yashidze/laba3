@@ -1,0 +1,25 @@
+pipeline {
+  agent any
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'main', credentialsId: 'GithubCred', url: 'https://github.com/Yashidze/laba3.git'
+      }
+    }
+    stage('Build') {
+      steps {
+        script {
+          docker.build("laba3-image:${env.BUILD_NUMBER}", ".")
+        }
+      }
+    }
+    stage('Run') {
+      steps {
+        script {
+          def dockerImage = docker.image("laba3-image:${env.BUILD_NUMBER}")
+          def container = dockerImage.run()
+        }
+      }
+    }
+  }
+}
